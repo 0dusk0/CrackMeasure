@@ -1,6 +1,6 @@
 <div align="center">
 
-# CrackMeasurePro
+# CrackMeasure
 
 ### 表面裂缝分割与测量系统
 
