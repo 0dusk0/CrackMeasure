@@ -150,13 +150,13 @@ dotnet run --project src/CrackMeasurePro -c Release
 自包含目录（无需安装 .NET ）：
 
 ```powershell
-dotnet publish src/CrackMeasurePro/CrackMeasurePro.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -o publish
+dotnet publish src/CrackMeasure/CrackMeasurePro.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -o publish
 ```
 
 单文件可执行程序（分发时需保留同目录下的 `crack_seg.onnx`）：
 
 ```powershell
-dotnet publish src/CrackMeasurePro/CrackMeasurePro.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish_single
+dotnet publish src/CrackMeasure/CrackMeasurePro.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish_single
 ```
 
 ---
