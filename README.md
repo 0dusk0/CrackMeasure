@@ -137,8 +137,8 @@ CrackMeasurePro/
 ### 2. 编译与运行
 
 ```powershell
-git clone https://github.com/<your-org>/CrackMeasurePro.git
-cd CrackMeasurePro
+git clone https://github.com/0dusk0/CrackMeasure1.git
+cd CrackMeasure1
 
 dotnet run --project src/CrackMeasurePro -c Release
 ```
@@ -153,7 +153,7 @@ dotnet run --project src/CrackMeasurePro -c Release
 dotnet publish src/CrackMeasurePro/CrackMeasurePro.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -o publish
 ```
 
-可执行程序：
+单文件可执行程序（分发时需保留同目录下的 `crack_seg.onnx`）：
 
 ```powershell
 dotnet publish src/CrackMeasurePro/CrackMeasurePro.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish_single

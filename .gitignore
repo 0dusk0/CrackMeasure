@@ -29,10 +29,3 @@ training/dataset_seg/
 .DS_Store
 Thumbs.db
 Desktop.ini
-
-cat << 'EOF' > .gitattributes
-* text=auto
-*.cs text eol=crlf
-*.csproj text eol=crlf
-*.sln text eol=crlf
-EOF
