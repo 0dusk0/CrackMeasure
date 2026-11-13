@@ -95,7 +95,7 @@ namespace CrackMeasurePro
 
         public MainForm()
         {
-            Text = "表面裂缝分割与测量系统 (C#)";
+            Text = "表面裂缝分割与测量系统(C# built by 0dusk0)";
             Size = new GdiSize(1580, 920);
             MinimumSize = new GdiSize(1280, 750);
             StartPosition = FormStartPosition.CenterScreen;
