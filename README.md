@@ -104,7 +104,7 @@
 ## 仓库结构
 
 ```text
-CrackMeasurePro/
+CrackMeasure/
 ├── LICENSE                          # MIT 协议
 ├── README.md                        # 说明文档
 ├── CrackMeasurePro.sln              # vs
@@ -114,7 +114,7 @@ CrackMeasurePro/
 │   ├── README.md                    # ONNX 模型输入输出规范与替换说明
 │   └── crack_seg.onnx               # 预训练裂缝分割模型 
 ├── src/
-│   └── CrackMeasurePro/
+│   └── CrackMeasure/
 │       ├── CrackMeasurePro.csproj   # .NET WinForms 工程配置与 NuGet 依赖
 │       ├── CrackCore.cs             # 推理、骨架细化、测宽与报告导出
 │       └── MainForm.cs              # WinForms 主界面、画布渲染、交互工具与多线程队列
