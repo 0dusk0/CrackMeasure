@@ -1,0 +1,38 @@
+# .NET / Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+publish/
+publish_single/
+TestResults/
+*.nupkg
+*.snupkg
+
+# Compiled binaries
+*.exe
+*.dll
+*.pdb
+
+# MATLAB training artifacts
+*.mat
+*.asv
+dataset_seg/
+training/dataset_seg/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+cat << 'EOF' > .gitattributes
+* text=auto
+*.cs text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
+EOF
