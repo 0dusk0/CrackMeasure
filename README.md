@@ -140,7 +140,7 @@ CrackMeasure/
 git clone https://github.com/0dusk0/CrackMeasure.git
 cd CrackMeasure
 
-dotnet run --project src/CrackMeasurePro -c Release
+dotnet run --project src/CrackMeasure -c Release
 ```
 
 也可使用 Visual Studio 2022+ 或 JetBrains Rider 打开 `CrackMeasurePro.sln` 编译运行（构建时自动将 `models/crack_seg.onnx` 复制至输出目录）。
