@@ -137,8 +137,8 @@ CrackMeasure/
 ### 2. 编译与运行
 
 ```powershell
-git clone https://github.com/0dusk0/CrackMeasure1.git
-cd CrackMeasure1
+git clone https://github.com/0dusk0/CrackMeasure.git
+cd CrackMeasure
 
 dotnet run --project src/CrackMeasurePro -c Release
 ```
