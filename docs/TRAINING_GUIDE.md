@@ -27,7 +27,7 @@ flowchart LR
 | **Crack500** | 3,368 张 | 二值掩码 `.png` | [GitHub: pavement-crack-detection](https://github.com/fyangneil/pavement-crack-detection) |
 | **DeepCrack** | 537 张 | 二值掩码 `.png` | [GitHub: yhlleo/DeepCrack](https://github.com/yhlleo/DeepCrack) |
 
-> 注：经非等比拉伸（Stretch）的数据集仅用于分割特征训练；在 `CrackMeasurePro` 中测量物理尺寸（`mm`）时，需使用未变形相机原图并通过参照物标定 `mm/px`。
+> 注：经非等比拉伸（Stretch）的数据集仅用于分割特征训练；在 `CrackMeasure` 中测量物理尺寸（`mm`）时，需使用未变形相机原图并通过参照物标定 `mm/px`。
 
 ### 1.2 执行 `training/convert_poly_to_mask.m`
 
@@ -60,7 +60,7 @@ outMaskDir = 'dataset_seg/masks';
 
 脚本处理流程：
 1. **网络架构**：默认 `MODEL_TYPE = 'deeplabv3plus'`（ResNet-18 骨干），可选 `'unet'`。
-2. **输入归一化**：将 `imageInputLayer` 的 `Normalization` 设为 `'none'`，输入图像通过 `im2single` 映射至 `[0, 1]`，与 `CrackMeasurePro` 推理输入一致。
+2. **输入归一化**：将 `imageInputLayer` 的 `Normalization` 设为 `'none'`，输入图像通过 `im2single` 映射至 `[0, 1]`，与 `CrackMeasure` 推理输入一致。
 3. **数据增强**：随机颜色抖动与仿射变换（翻转、$\pm 25^\circ$ 旋转、`0.85~1.15` 缩放）；图像越界像素填充 `128`，标签越界像素填充 `"background"`。
 4. **类别加权**：统计训练集背景与裂缝像素占比，按中位数频率比计算类别权重（上限 `15.0`）并写入 `pixelClassificationLayer`。
 5. **评估与导出**：按 `80% : 10% : 10%` 划分训练/验证/测试集，输出测试集裂缝类别 `IoU` 与 `MeanBFScore`，移除末尾分类损失层后以 Opset 12 导出 `crack_seg.onnx`。
