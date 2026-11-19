@@ -5,42 +5,77 @@ clear; clc;
 
 MODEL_TYPE = 'deeplabv3plus';
 inputSize  = [512, 512, 3];
+dataRoot   = 'dataset_seg';
 imgDir     = 'dataset_seg/images';
 maskDir    = 'dataset_seg/masks';
 
-if ~exist(imgDir, 'dir') || ~exist(maskDir, 'dir')
-    error('未找到 dataset_seg/images 或 dataset_seg/masks，请先运行 convert_poly_to_mask.m！');
-end
-
-
-imds = imageDatastore(imgDir);
 classNames = ["background", "crack"];
 labelIDs   = [0, 255];
-pxds = pixelLabelDatastore(maskDir, classNames, labelIDs);
 
-if numel(imds.Files) ~= numel(pxds.Files)
-    error('图像数量 (%d) 与掩码数量 (%d) 不一致，请重新运行 convert_poly_to_mask.m！', ...
-        numel(imds.Files), numel(pxds.Files));
+if exist(fullfile(dataRoot, 'train', 'images'), 'dir') && exist(fullfile(dataRoot, 'train', 'masks'), 'dir')
+    imdsTrain = imageDatastore(fullfile(dataRoot, 'train', 'images'));
+    pxdsTrain = pixelLabelDatastore(fullfile(dataRoot, 'train', 'masks'), classNames, labelIDs);
+    if numel(imdsTrain.Files) ~= numel(pxdsTrain.Files)
+        error('训练集图像数量 (%d) 与掩码数量 (%d) 不一致，请重新运行 convert_poly_to_mask.m！', ...
+            numel(imdsTrain.Files), numel(pxdsTrain.Files));
+    end
+
+    if exist(fullfile(dataRoot, 'valid', 'images'), 'dir') && exist(fullfile(dataRoot, 'valid', 'masks'), 'dir')
+        imdsVal = imageDatastore(fullfile(dataRoot, 'valid', 'images'));
+        pxdsVal = pixelLabelDatastore(fullfile(dataRoot, 'valid', 'masks'), classNames, labelIDs);
+        if numel(imdsVal.Files) ~= numel(pxdsVal.Files)
+            error('验证集图像数量 (%d) 与掩码数量 (%d) 不一致！', numel(imdsVal.Files), numel(pxdsVal.Files));
+        end
+    else
+        rng(42);
+        nTr = numel(imdsTrain.Files);
+        idx = randperm(nTr);
+        nVal = max(1, round(0.10 * nTr));
+        imdsVal   = subset(imdsTrain, idx(1:nVal));   pxdsVal   = subset(pxdsTrain, idx(1:nVal));
+        imdsTrain = subset(imdsTrain, idx(nVal+1:end)); pxdsTrain = subset(pxdsTrain, idx(nVal+1:end));
+    end
+
+    if exist(fullfile(dataRoot, 'test', 'images'), 'dir') && exist(fullfile(dataRoot, 'test', 'masks'), 'dir')
+        imdsTest = imageDatastore(fullfile(dataRoot, 'test', 'images'));
+        pxdsTest = pixelLabelDatastore(fullfile(dataRoot, 'test', 'masks'), classNames, labelIDs);
+        if numel(imdsTest.Files) ~= numel(pxdsTest.Files)
+            error('测试集图像数量 (%d) 与掩码数量 (%d) 不一致！', numel(imdsTest.Files), numel(pxdsTest.Files));
+        end
+    else
+        imdsTest = []; pxdsTest = [];
+    end
+elseif exist(imgDir, 'dir') && exist(maskDir, 'dir')
+    imds = imageDatastore(imgDir);
+    pxds = pixelLabelDatastore(maskDir, classNames, labelIDs);
+
+    if numel(imds.Files) ~= numel(pxds.Files)
+        error('图像数量 (%d) 与掩码数量 (%d) 不一致，请重新运行 convert_poly_to_mask.m！', ...
+            numel(imds.Files), numel(pxds.Files));
+    end
+
+    % 按 80% : 10% : 10% 划分训练集、验证集与测试集
+    rng(42);
+    numImages = numel(imds.Files);
+    shuffledIdx = randperm(numImages);
+
+    numTrain = round(0.80 * numImages);
+    numVal   = round(0.10 * numImages);
+
+    trainIdx = shuffledIdx(1 : numTrain);
+    valIdx   = shuffledIdx(numTrain + 1 : numTrain + numVal);
+    testIdx  = shuffledIdx(numTrain + numVal + 1 : end);
+
+    imdsTrain = subset(imds, trainIdx); pxdsTrain = subset(pxds, trainIdx);
+    imdsVal   = subset(imds, valIdx);   pxdsVal   = subset(pxds, valIdx);
+    imdsTest  = subset(imds, testIdx);  pxdsTest  = subset(pxds, testIdx);
+else
+    error('未找到 dataset_seg/train 或 dataset_seg/images，请先运行 convert_poly_to_mask.m！');
 end
 
-% 按 80% : 10% : 10% 划分训练集、验证集与测试集
-rng(42);
-numImages = numel(imds.Files);
-shuffledIdx = randperm(numImages);
-
-numTrain = round(0.80 * numImages);
-numVal   = round(0.10 * numImages);
-
-trainIdx = shuffledIdx(1 : numTrain);
-valIdx   = shuffledIdx(numTrain + 1 : numTrain + numVal);
-testIdx  = shuffledIdx(numTrain + numVal + 1 : end);
-
-imdsTrain = subset(imds, trainIdx); pxdsTrain = subset(pxds, trainIdx);
-imdsVal   = subset(imds, valIdx);   pxdsVal   = subset(pxds, valIdx);
-imdsTest  = subset(imds, testIdx);  pxdsTest  = subset(pxds, testIdx);
-
+numTest = 0;
+if ~isempty(imdsTest), numTest = numel(imdsTest.Files); end
 fprintf('数据集划分：训练集 %d 张 | 验证集 %d 张 | 测试集 %d 张\n', ...
-    numel(trainIdx), numel(valIdx), numel(testIdx));
+    numel(imdsTrain.Files), numel(imdsVal.Files), numTest);
 
 
 tbl = countEachLabel(pxdsTrain);
@@ -82,7 +117,7 @@ preprocessedValDS = transform(valDS,   @(data)preprocessSegData(data, inputSize)
 
 
 miniBatchSize = 8; % 若 GPU 显存 < 6GB，可调小为 4
-valFrequency  = max(1, floor(numel(trainIdx) / miniBatchSize));
+valFrequency  = max(1, floor(numel(imdsTrain.Files) / miniBatchSize));
 
 options = trainingOptions('adam', ...
     'InitialLearnRate', 1e-4, ...
@@ -100,16 +135,10 @@ options = trainingOptions('adam', ...
     'Verbose', true, ...
     'VerboseFrequency', 25);
 
-% --- 插入在 trainNetwork 之前用于诊断 ---
-valSample = read(preprocessedValDS);
-disp(valSample);
-reset(preprocessedValDS);
-% ----------------------------------------
-
 [net, info] = trainNetwork(augmentedTrainDS, lgraph, options);
 save('trained_crack_seg.mat', 'net', 'inputSize');
 
-if ~isempty(testIdx)
+if ~isempty(imdsTest) && ~isempty(imdsTest.Files)
     tempPredDir = fullfile(tempdir, 'crack_seg_preds');
     if exist(tempPredDir, 'dir'), rmdir(tempPredDir, 's'); end
     mkdir(tempPredDir);

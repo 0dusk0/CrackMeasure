@@ -4,7 +4,7 @@
 
 ### 表面裂缝分割与测量系统
 
-![.NET](https://img.shields.io/badge/.NET-8.0%2B%20WinForms-512BD4?logo=dotnet)
+![.NET](https://img.shields.io/badge/.NET-11.0%20WinForms-512BD4?logo=dotnet)
 ![OpenCvSharp4](https://img.shields.io/badge/OpenCvSharp4-4.13-green?logo=opencv)
 ![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-DirectML%20%7C%20CPU-005CED?logo=onnx)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20x64-0078D6?logo=windows)
@@ -18,30 +18,35 @@
 
 ## 效果展示
 
-### 1. 裂缝编号标注
-左侧原始图像。
+### 1. 界面
+统一暗色工作台配色、矢量图标与三栏可调布局。
 
-![双图对比与编号标注](<docs/images/屏幕截图 2026-11-13 140935.png>)
+![深色精密计量工作台界面](docs/images/ui-studio.png)
 
-### 2.几何测量参数与 $W_{\max}$ 靶标定位
+### 2. 裂缝编号标注
+左侧原始图像，右侧叠加分割掩码、骨架分叉点与防重叠编号标注。
+
+![双图对比与编号标注](docs/images/demo-overview.png)
+
+### 3. 几何测量参数与 $W_{\max}$ 靶标定位
 切换至**完整测量参数**标签模式后，图面直接标注每条裂缝的走向分类、骨架长度 $L$、平均宽度 $W$ 与最大宽度 $W_{\max}$，并以 `⊕` 靶标标出屏蔽分叉区后的最大宽度截面位置。
 
-![完整测量参数与Wmax靶标标注](<docs/images/屏幕截图 2026-11-13 141119.png>)
+![完整测量参数与Wmax靶标标注](docs/images/demo-metrics-wmax.png)
 
-### 3. 二值分割掩码视图与交互式修补
-在**掩码视图**下可查看二值化与形态学桥接后的分割掩码，配合顶部工具栏的**补画裂缝**与**擦除伪影**笔刷工具，可直接涂抹修补断缝或剔除背景干扰并重算几何参数。
+### 4. 二值分割掩码视图与交互式修补
+在**掩码视图**下可查看二值化与形态学桥接后的分割掩码，配合左侧工具轨的**补画**与**擦除**笔刷工具，可直接涂抹修补断缝或剔除背景干扰并重算几何参数。
 
-![二值分割掩码视图](<docs/images/屏幕截图 2026-11-13 141135.png>)
+![二值分割掩码视图](docs/images/demo-mask-view.png)
 
-### 4. 比例尺标定与自由游标卡尺测距
-通过**标定比例尺**工具在标尺或参照物两端取点即可完成 `mm/px` 物理尺寸换算；使用**自由卡尺**可在画布任意两点拉线实时测量像素距离与物理长度（`mm`）。
+### 5. 比例尺标定与自由游标卡尺测距
+通过**标定**工具在标尺或参照物两端取点即可完成 `mm/px` 物理尺寸换算；使用**卡尺**工具可在画布任意两点拉线实时测量像素距离与物理长度（`mm`）。
 
-![自由游标卡尺与比例尺测量](<docs/images/屏幕截图 2026-11-13 141544.png>)
+![自由游标卡尺与比例尺测量](docs/images/demo-caliper-scale.png)
 
-### 5. 图文检测报告导出 (HTML / PDF / Word)
+### 6. 图文检测报告导出 (HTML / PDF / Word)
 支持一键生成包含工程信息、超限预警结论、原图与测量标注对比图以及单缝几何参数明细表的检测报告，可直接打印或转存为 PDF / Word 文档。
 
-![图文检测报告导出预览](<docs/images/截图 2026-11-13 15-08-45.png>)
+![图文检测报告导出预览](docs/images/demo-report.png)
 
 ---
 
@@ -67,7 +72,7 @@
    * 基于碰撞检测排布带引线的矢量标签，支持“精简编号 / 完整测量参数 / 无文字”三种视图。
 
 5. **数据与报告导出**
-   * **AutoCAD 矢量图 (`.dxf`)**：输出 `AC1009 (R12)` 标准 DXF 文件，包含 `IMAGE_FRAME`（图框）、`CRACK_CONTOUR`（闭合轮廓）、`CRACK_SKELETON`（法向测宽截面线）、`CRACK_WMAX`（最大宽度靶标与标注文字）四个图层。
+   * **AutoCAD 矢量图 (`.dxf`)**：输出 `AC1009 (R12)` 标准 DXF 文件，包含 `IMAGE_FRAME`（图框）、`CRACK_CONTOUR`（闭合轮廓）、`CRACK_SECTION`（法向测宽截面线）、`CRACK_WMAX`（最大宽度靶标与标注文字）四个图层。
    * **Excel 表格 (`.xlsx`)**：导出《图像汇总》与《裂缝明细》两个工作表。
    * **检测报告 (`.html` / `.doc`)**：生成包含工程元数据、阈值预警统计、原图/结果对比图及明细表的 HTML 报告或 Word (`.doc` MHTML) 文档。
 
@@ -107,7 +112,7 @@
 CrackMeasure/
 ├── LICENSE                          # MIT 协议
 ├── README.md                        # 说明文档
-├── CrackMeasurePro.sln              # vs
+├── CrackMeasure.sln                 # vs
 ├── docs/
 │   └── TRAINING_GUIDE.md            # MATLAB 语义分割模型训练与 ONNX 导出说明
 ├── models/
@@ -115,9 +120,14 @@ CrackMeasure/
 │   └── crack_seg.onnx               # 预训练裂缝分割模型 
 ├── src/
 │   └── CrackMeasure/
-│       ├── CrackMeasurePro.csproj   # .NET WinForms 工程配置与 NuGet 依赖
-│       ├── CrackCore.cs             # 推理、骨架细化、测宽与报告导出
-│       └── MainForm.cs              # WinForms 主界面、画布渲染、交互工具与多线程队列
+│       ├── CrackMeasure.csproj      # .NET WinForms 工程配置与 NuGet 依赖
+│       ├── Program.cs               # 应用程序入口与高 DPI 初始化
+│       ├── Core/
+│       │   └── CrackCore.cs         # 推理、骨架细化、测宽与报告导出
+│       └── UI/
+│           ├── Icons.cs             # 矢量图标库
+│           ├── Themes.cs            # 主题
+│           └── MainForm.cs          # 主界面、交互工具
 └── training/
     ├── README.md                    # 训练脚本目录说明
     ├── convert_poly_to_mask.m       # YOLOv8 多边形 .txt / 外部掩码 → 二值 PNG 转换脚本
@@ -132,7 +142,7 @@ CrackMeasure/
 ### 1. 环境要求
 
 * **操作系统**：Windows 10 / 11 (x64)
-* **SDK**：[.NET SDK](https://dotnet.microsoft.com/download)（工程默认 `<TargetFramework>net11.0-windows</TargetFramework>`；若使用 .NET 8.0 / 9.0 / 10.0 SDK，将 `src/CrackMeasurePro/CrackMeasurePro.csproj` 中的 `TargetFramework` 改为对应的 `net8.0-windows` / `net9.0-windows` / `net10.0-windows`）
+* **SDK**：[.NET SDK](https://dotnet.microsoft.com/download)（工程默认 `<TargetFramework>net11.0-windows</TargetFramework>`；若使用 .NET 8.0 / 9.0 / 10.0 SDK，将 `src/CrackMeasure/CrackMeasure.csproj` 中的 `TargetFramework` 改为对应的 `net8.0-windows` / `net9.0-windows` / `net10.0-windows`）
 
 ### 2. 编译与运行
 
@@ -143,20 +153,20 @@ cd CrackMeasure
 dotnet run --project src/CrackMeasure -c Release
 ```
 
-也可使用 Visual Studio 2022+ 或 JetBrains Rider 打开 `CrackMeasurePro.sln` 编译运行（构建时自动将 `models/crack_seg.onnx` 复制至输出目录）。
+也可使用 Visual Studio 2022+ 或 JetBrains Rider 打开 `CrackMeasure.sln` 编译运行（构建时自动将 `models/crack_seg.onnx` 复制至输出目录）。
 
 ### 3. 发布独立可执行程序
 
 自包含目录（无需安装 .NET ）：
 
 ```powershell
-dotnet publish src/CrackMeasure/CrackMeasurePro.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -o publish
+dotnet publish src/CrackMeasure/CrackMeasure.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -o publish
 ```
 
 单文件可执行程序（分发时需保留同目录下的 `crack_seg.onnx`）：
 
 ```powershell
-dotnet publish src/CrackMeasure/CrackMeasurePro.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish_single
+dotnet publish src/CrackMeasure/CrackMeasure.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish_single
 ```
 
 ---

@@ -11,7 +11,7 @@ flowchart LR
     A["YOLOv8 多边形 .txt\n或二值掩码数据集"] -->|"1. training/convert_poly_to_mask.m"| B["配对二值掩码 PNG\n(0=背景, 255=裂缝)"]
     B -->|"2. training/training.m"| C["DeepLabv3+ / U-Net\n训练与测试集评估"]
     C -->|"3. 移除分类损失层\nexportONNXNetwork"| D["models/crack_seg.onnx"]
-    D -->|"4. CrackMeasurePro"| E["推理与几何测量"]
+    D -->|"4. CrackMeasure"| E["推理与几何测量"]
 ```
 
 ---
@@ -36,7 +36,7 @@ flowchart LR
 * **`MODE = 'poly_txt'`（默认）**：解析 YOLOv8 多边形顶点 `.txt`（`class_id x1 y1 x2 y2 ... xn yn`），调用 `poly2mask` 生成二值掩码 `.png`（`0` = 背景，`255` = 裂缝），同时兼容 5 列矩形框格式 `[class_id, cx, cy, w, h]`。
 * **`MODE = 'mask'`**：将外部掩码数据集（logical、`{0,1}`、`{0,255}` 或 RGB 掩码）转换为单通道 `uint8` `{0, 255}` 的 `.png` 文件。
 
-运行前配置脚本中的输入输出路径：
+运行前默认配置（当 `dataset/train/images` 存在且 `USE_DATASET_SPLITS = true` 时，自动遍历 `{train,valid,test}` 分别输出到 `dataset_seg/<split>/`；单目录模式默认指向 `dataset/train/`）：
 ```matlab
 imgDir     = 'dataset/train/images';
 annoDir    = 'dataset/train/labels';
@@ -63,7 +63,7 @@ outMaskDir = 'dataset_seg/masks';
 2. **输入归一化**：将 `imageInputLayer` 的 `Normalization` 设为 `'none'`，输入图像通过 `im2single` 映射至 `[0, 1]`，与 `CrackMeasure` 推理输入一致。
 3. **数据增强**：随机颜色抖动与仿射变换（翻转、$\pm 25^\circ$ 旋转、`0.85~1.15` 缩放）；图像越界像素填充 `128`，标签越界像素填充 `"background"`。
 4. **类别加权**：统计训练集背景与裂缝像素占比，按中位数频率比计算类别权重（上限 `15.0`）并写入 `pixelClassificationLayer`。
-5. **评估与导出**：按 `80% : 10% : 10%` 划分训练/验证/测试集，输出测试集裂缝类别 `IoU` 与 `MeanBFScore`，移除末尾分类损失层后以 Opset 12 导出 `crack_seg.onnx`。
+5. **评估与导出**：若存在 `dataset_seg/{train,valid,test}` 目录则直接沿用官方划分，否则按 `80% : 10% : 10%` 随机划分训练/验证/测试集，输出测试集裂缝类别 `IoU` 与 `MeanBFScore`，移除末尾分类损失层后以 Opset 12 导出 `crack_seg.onnx`。
 
 ---
 

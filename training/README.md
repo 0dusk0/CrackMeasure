@@ -11,7 +11,7 @@
 ## 运行步骤
 
 1. 在 MATLAB 中将工作目录切换至 `training/`。
-2. 修改 `convert_poly_to_mask.m` 中的 `imgDir` 与 `annoDir`（例如指向 `dataset/train/images` 与 `dataset/train/labels`），运行脚本生成 `dataset_seg/`。
+2. 运行 `convert_poly_to_mask.m`（默认自动遍历 `dataset/{train,valid,test}` 生成 `dataset_seg/{train,valid,test}`；若使用自定义单目录数据集，可将 `USE_DATASET_SPLITS` 设为 `false` 并调整 `imgDir` 与 `annoDir`）。
 3. 运行 `training.m`，训练完成后在当前目录生成 `crack_seg.onnx`。
 4. 将 `crack_seg.onnx` 复制至 `../models/crack_seg.onnx`。
 
