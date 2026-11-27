@@ -8,14 +8,18 @@ obj/
 *.sln.docstates
 publish/
 publish_single/
+dist/
 TestResults/
 *.nupkg
 *.snupkg
 
-# Compiled binaries
+# Compiled binaries & archives
 *.exe
 *.dll
 *.pdb
+*.zip
+*.7z
+*.bundle
 
 # MATLAB training artifacts
 *.mat
@@ -23,12 +27,18 @@ TestResults/
 dataset_seg/
 training/dataset_seg/
 
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
 # IDE & OS
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 Desktop.ini
-
-
-

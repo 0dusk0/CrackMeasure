@@ -4,7 +4,7 @@
 
 ### 表面裂缝分割与测量系统
 
-![.NET](https://img.shields.io/badge/.NET-11.0%20WinForms-512BD4?logo=dotnet)
+![.NET](https://img.shields.io/badge/.NET-8.0%2B%20WinForms-512BD4?logo=dotnet)
 ![OpenCvSharp4](https://img.shields.io/badge/OpenCvSharp4-4.13-green?logo=opencv)
 ![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-DirectML%20%7C%20CPU-005CED?logo=onnx)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20x64-0078D6?logo=windows)
@@ -13,6 +13,12 @@
 支持 DirectML 显卡推理 · 256 态查找表骨架细化 · 亚像素法向射线寻边测宽 · 悬停正交游标卡尺 · 交互式掩码修补 · CAD (`.dxf`) / Excel (`.xlsx`) / Word (`.doc`) / HTML 报告导出
 
 </div>
+
+---
+
+## 快速体验（免安装绿色版）
+
+无需安装 .NET 运行时或配置 CUDA 环境，前往 [GitHub Releases](https://github.com/0dusk0/CrackMeasure/releases) 下载 `CrackMeasure-v1.0.0-win-x64.zip`，解压后直接双击 `CrackMeasure.exe` 即可运行（压缩包内 `samples/` 目录已自带 4 张测试样张，说明见 [`samples/README.md`](samples/README.md)）。
 
 ---
 
@@ -110,18 +116,29 @@
 
 ```text
 CrackMeasure/
+├── .github/
+│   └── workflows/
+│       └── release.yml              # GitHub Actions 自动构建与发版工作流
 ├── LICENSE                          # MIT 协议
 ├── README.md                        # 说明文档
-├── CrackMeasure.sln                 # vs
+├── CrackMeasure.sln                 # Visual Studio 解决方案
 ├── docs/
 │   └── TRAINING_GUIDE.md            # MATLAB 语义分割模型训练与 ONNX 导出说明
 ├── models/
 │   ├── README.md                    # ONNX 模型输入输出规范与替换说明
-│   └── crack_seg.onnx               # 预训练裂缝分割模型 
+│   └── crack_seg.onnx               # 预训练裂缝分割模型
+├── samples/
+│   ├── README.md                    # 测试样例说明与物理比例尺参考
+│   └── sample_01~04_*.jpg           # 开箱即用的裂缝测试样张
+├── scripts/
+│   ├── package.ps1                  # Windows 一键瘦身打包脚本
+│   └── package.sh                   # Linux/macOS 交叉编译打包脚本
 ├── src/
 │   └── CrackMeasure/
 │       ├── CrackMeasure.csproj      # .NET WinForms 工程配置与 NuGet 依赖
 │       ├── Program.cs               # 应用程序入口与高 DPI 初始化
+│       ├── Assets/
+│       │   └── app.ico              # 应用程序多分辨率图标
 │       ├── Core/
 │       │   └── CrackCore.cs         # 推理、骨架细化、测宽与报告导出
 │       └── UI/
@@ -141,8 +158,8 @@ CrackMeasure/
 
 ### 1. 环境要求
 
-* **操作系统**：Windows 10 / 11 (x64)
-* **SDK**：[.NET SDK](https://dotnet.microsoft.com/download)（工程默认 `<TargetFramework>net11.0-windows</TargetFramework>`；若使用 .NET 8.0 / 9.0 / 10.0 SDK，将 `src/CrackMeasure/CrackMeasure.csproj` 中的 `TargetFramework` 改为对应的 `net8.0-windows` / `net9.0-windows` / `net10.0-windows`）
+* **操作系统**：Windows 10 / 11 (x64)（或通过 Linux / macOS .NET SDK 进行 `win-x64` 交叉发布）
+* **SDK**：[.NET 8.0+ SDK](https://dotnet.microsoft.com/download)（工程目标框架为 `net8.0-windows` 并启用 `RollForward=LatestMajor`，原生兼容 `.NET 8 / 9 / 10 / 11` 与 Visual Studio 2022+）
 
 ### 2. 编译与运行
 
@@ -157,17 +174,25 @@ dotnet run --project src/CrackMeasure -c Release
 
 ### 3. 发布独立可执行程序
 
-自包含目录（无需安装 .NET ）：
+推荐使用项目自带的一键瘦身打包脚本（自动将托管程序集打入单文件 `CrackMeasure.exe`，剔除 `.pdb` / `DirectML.Debug.*` / `opencv_videoio_ffmpeg*.dll` 等约 42 MB 冗余调试与视频库，并复制 `samples/` 打包为绿色版压缩包）：
 
 ```powershell
-dotnet publish src/CrackMeasure/CrackMeasure.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -o publish
+# Windows PowerShell
+./scripts/package.ps1 -Version v1.0.0
 ```
 
-单文件可执行程序（分发时需保留同目录下的 `crack_seg.onnx`）：
+```bash
+# Linux / macOS
+bash scripts/package.sh v1.0.0
+```
+
+上述脚本核心调用如下 `dotnet publish` 命令：
 
 ```powershell
-dotnet publish src/CrackMeasure/CrackMeasure.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish_single
+dotnet publish src/CrackMeasure/CrackMeasure.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=false -p:DebugType=None -p:DebugSymbols=false -o dist/CrackMeasure-win-x64
 ```
+
+> **说明**：有意保留 `IncludeNativeLibrariesForSelfExtract=false`，使原生 C++ 加速库（`DirectML.dll`、`onnxruntime.dll`、`onnxruntime_providers_shared.dll`、`OpenCvSharpExtern.dll`）与模型文件 `crack_seg.onnx` 保持在 `CrackMeasure.exe` 同级目录，既避免运行时解压到临时目录并防止 DirectML GPU 加速加载失败退回 CPU，也方便直接替换自定义训练的 `crack_seg.onnx`。
 
 ---
 

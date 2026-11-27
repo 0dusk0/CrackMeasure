@@ -2,15 +2,27 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net11.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RollForward>LatestMajor</RollForward>
     <PlatformTarget>x64</PlatformTarget>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>CrackMeasure</Product>
+    <Authors>CrackMeasure Contributors</Authors>
+    <Description>表面裂缝智能分割与亚像素几何测量系统</Description>
+    <Copyright>Copyright (c) 2026 CrackMeasure Contributors</Copyright>
+    <ApplicationIcon>Assets/app.ico</ApplicationIcon>
+    <SatelliteResourceLanguages>zh-Hans;en</SatelliteResourceLanguages>
+    <NoWarn Condition="!$([MSBuild]::IsOSPlatform('Windows'))">$(NoWarn);NETSDK1074</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="CrackMeasure.Tests" />
+    <EmbeddedResource Include="Assets/app.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +34,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\models\crack_seg.onnx" Link="crack_seg.onnx" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\models\crack_seg.onnx')" />
+    <None Include="../../models/crack_seg.onnx" Link="crack_seg.onnx" CopyToOutputDirectory="PreserveNewest" Condition="Exists('../../models/crack_seg.onnx')" ExcludeFromSingleFile="true" />
   </ItemGroup>
+
+  <Target Name="CleanNativePublishBloat" AfterTargets="Publish">
+    <ItemGroup>
+      <_NativeBloat Include="$(PublishDir)DirectML.Debug.dll" />
+      <_NativeBloat Include="$(PublishDir)DirectML.Debug.pdb" />
+      <_NativeBloat Include="$(PublishDir)DirectML.pdb" />
+      <_NativeBloat Include="$(PublishDir)DirectML.lib" />
+      <_NativeBloat Include="$(PublishDir)onnxruntime.lib" />
+      <_NativeBloat Include="$(PublishDir)onnxruntime.pdb" />
+      <_NativeBloat Include="$(PublishDir)opencv_videoio_ffmpeg*.dll" />
+      <_NativeBloat Include="$(PublishDir)createdump.exe" />
+    </ItemGroup>
+    <Delete Files="@(_NativeBloat)" TreatErrorsAsWarnings="true" />
+  </Target>
 
 </Project>

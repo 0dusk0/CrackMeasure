@@ -106,6 +106,13 @@ namespace CrackMeasure
         public MainForm()
         {
             Text = "CrackMeasure — 表面裂缝分割与测量系统";
+            try
+            {
+                using Stream? iconStream = typeof(MainForm).Assembly.GetManifestResourceStream("CrackMeasure.Assets.app.ico");
+                if (iconStream != null) Icon = new Icon(iconStream);
+                else if (File.Exists(Application.ExecutablePath)) Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            }
+            catch { }
             Size = new GdiSize(1580, 920);
             MinimumSize = new GdiSize(1280, 750);
             StartPosition = FormStartPosition.CenterScreen;
