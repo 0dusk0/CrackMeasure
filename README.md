@@ -16,7 +16,7 @@
 
 ---
 
-## 快速体验（免安装绿色版）
+## 快速体验
 
 无需安装 .NET 运行时或配置 CUDA 环境，前往 [GitHub Releases](https://github.com/0dusk0/CrackMeasure/releases) 下载 `CrackMeasure-v1.0.0-win-x64.zip`，解压后直接双击 `CrackMeasure.exe` 即可运行（压缩包内 `samples/` 目录已自带 4 张测试样张，说明见 [`samples/README.md`](samples/README.md)）。
 
@@ -132,7 +132,7 @@ CrackMeasure/
 │   └── sample_01~04_*.jpg           # 开箱即用的裂缝测试样张
 ├── scripts/
 │   ├── package.ps1                  # Windows 一键瘦身打包脚本
-│   └── package.sh                   # Linux/macOS 交叉编译打包脚本
+│   └── package.sh                   # Linux/macOS 编译打包
 ├── src/
 │   └── CrackMeasure/
 │       ├── CrackMeasure.csproj      # .NET WinForms 工程配置与 NuGet 依赖
@@ -174,7 +174,7 @@ dotnet run --project src/CrackMeasure -c Release
 
 ### 3. 发布独立可执行程序
 
-推荐使用项目自带的一键瘦身打包脚本（自动将托管程序集打入单文件 `CrackMeasure.exe`，剔除 `.pdb` / `DirectML.Debug.*` / `opencv_videoio_ffmpeg*.dll` 等约 42 MB 冗余调试与视频库，并复制 `samples/` 打包为绿色版压缩包）：
+推荐使用项目自带的打包脚本：
 
 ```powershell
 # Windows PowerShell
@@ -191,8 +191,6 @@ bash scripts/package.sh v1.0.0
 ```powershell
 dotnet publish src/CrackMeasure/CrackMeasure.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=false -p:DebugType=None -p:DebugSymbols=false -o dist/CrackMeasure-win-x64
 ```
-
-> **说明**：有意保留 `IncludeNativeLibrariesForSelfExtract=false`，使原生 C++ 加速库（`DirectML.dll`、`onnxruntime.dll`、`onnxruntime_providers_shared.dll`、`OpenCvSharpExtern.dll`）与模型文件 `crack_seg.onnx` 保持在 `CrackMeasure.exe` 同级目录，既避免运行时解压到临时目录并防止 DirectML GPU 加速加载失败退回 CPU，也方便直接替换自定义训练的 `crack_seg.onnx`。
 
 ---
 
